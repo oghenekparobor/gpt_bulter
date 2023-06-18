@@ -16,11 +16,13 @@ class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
   @override
   void initState() {
-    context.read<BulterViewModel>().controller = AnimationController(
+    context.bulter.controller = AnimationController(
       vsync: this,
     );
 
     super.initState();
+
+    context.bulter.listen();
   }
 
   @override
@@ -40,9 +42,6 @@ class _HomeScreenState extends State<HomeScreen>
             child: Lottie.asset(
               ktalking,
               controller: context.bulter.controller,
-              onLoaded: (p0) {
-                context.bulter.playBulter();
-              },
             ),
           ),
         ],

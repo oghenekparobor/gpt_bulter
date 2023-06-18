@@ -6,5 +6,5 @@ extension ContextExt on BuildContext {
   ThemeData get theme => Theme.of(this);
   TextTheme get textTheme => Theme.of(this).textTheme;
 
-  ButlerViewModel get bulter => read<ButlerViewModel>();
+  ButlerViewModel get butler => read<ButlerViewModel>();
 }

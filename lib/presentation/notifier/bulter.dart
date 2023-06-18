@@ -34,6 +34,15 @@ class ButlerViewModel extends ChangeNotifier {
     controller?.reset();
   }
 
+  bool isListening = false;
+
+  void checkWhetherListening() {
+    ButlerLogger.log(speechToText.isListening);
+
+    isListening = !isListening;
+    notifyListeners();
+  }
+
   void listen({bool firstLaunch = false}) async {
     if (firstLaunch) {
       // welcome the user once app is justed opened
@@ -41,6 +50,8 @@ class ButlerViewModel extends ChangeNotifier {
     }
 
     var status = await speechToText.initialize();
+    checkWhetherListening();
+
     if (status) {
       speechToText.listen(
         onResult: _onSpeechResult,
@@ -54,6 +65,8 @@ class ButlerViewModel extends ChangeNotifier {
 
   void _onSpeechResult(SpeechRecognitionResult result) async {
     if (result.finalResult) {
+      checkWhetherListening();
+
       if (result.confidence > .65) {
         ButlerLogger.log({
           'confidence': result.confidence,

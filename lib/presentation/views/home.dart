@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:my_buttler/core/constant/asset.dart';
 import 'package:my_buttler/core/extensions/context.dart';
+import 'package:my_buttler/presentation/notifier/bulter.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -51,6 +53,14 @@ class _HomeScreenState extends State<HomeScreen>
               ),
             ),
           ),
+          Consumer<ButlerViewModel>(
+            builder: (_, value, __) => Align(
+              alignment: Alignment.bottomCenter,
+              child: value.isListening
+                  ? const LinearProgressIndicator(color: Color(0xFF008D1D))
+                  : null,
+            ),
+          )
         ],
       ),
     );

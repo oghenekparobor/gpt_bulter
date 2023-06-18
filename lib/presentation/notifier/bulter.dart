@@ -2,60 +2,64 @@ import 'package:flutter/material.dart';
 import 'package:my_buttler/core/logger/logger.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
+import 'package:text_to_speech/text_to_speech.dart';
 
 class ButlerViewModel extends ChangeNotifier {
   ButlerViewModel() {
+    // initialize speech to text plugin
     speechToText = SpeechToText();
+
+    // initialize text to speech plugin
+    textToSpeech = TextToSpeech();
   }
 
   late SpeechToText speechToText;
+  late TextToSpeech textToSpeech;
 
   AnimationController? controller;
 
   playButler() {
-    controller?.duration = const Duration(milliseconds: 3000);
+    ButlerLogger.log('ai motion play');
+    controller?.duration = const Duration(milliseconds: 2500);
     controller?.repeat();
   }
 
   stopButler() {
+    ButlerLogger.log('ai motion stop');
+
     controller?.stop();
     controller?.reset();
   }
 
   void listen() async {
-    ButlerLogger.log('listening called');
-
-    var data = await speechToText.initialize();
-
-    ButlerLogger.log('Speach initialised: $data');
-
-    speechToText.listen(
-      onResult: (s) {
-        ButlerLogger.log(s.recognizedWords);
-      },
-      listenMode: ListenMode.dictation,
-      listenFor: const Duration(minutes: 6),
-    );
+    var status = await speechToText.initialize();
+    if (status) {
+      speechToText.listen(
+        onResult: _onSpeechResult,
+        listenMode: ListenMode.dictation,
+        listenFor: const Duration(minutes: 1),
+      );
+    } else {
+      await butlerSpeak('I am not permited to listen to you');
+    }
   }
 
-  // void _onSpeechResult(SpeechRecognitionResult result) {
-  //   ButlerLogger.log('speech result is called');
+  void _onSpeechResult(SpeechRecognitionResult result) async {
+    if (result.finalResult) {
+      if (result.confidence > .98) {
+        ButlerLogger.log({
+          'confidence': result.confidence,
+          'speech': result.recognizedWords,
+        });
+      } else {
+        await butlerSpeak(
+          'I didn\'t get what you said. Please kindly repeat yourself',
+        );
 
-  //   // if (result.recognizedWords.toLowerCase().contains('hello') ||
-  //   //     result.recognizedWords.toString().contains('testing') ||
-  //   //     result.recognizedWords.toLowerCase().contains('Hello')) {
-  //   //   playButler();
-  //   // }
-
-  //   // if (result.recognizedWords.toLowerCase().contains('stop')) {
-  //   //   stopButler();
-  //   // }
-
-  //   ButlerLogger.log({
-  //     'confidence': result.confidence,
-  //     'speech': result.recognizedWords,
-  //   });
-  // }
+        // listen();
+      }
+    }
+  }
 
   void stopListen() async {
     ButlerLogger.log('listening stopped');
@@ -63,5 +67,14 @@ class ButlerViewModel extends ChangeNotifier {
     speechToText.stop();
   }
 
-  void butlerSpeak() async {}
+  Future<void> butlerSpeak(String message) async {
+    playButler();
+
+    await Future.delayed(const Duration(milliseconds: 700), () async {
+      var res = await textToSpeech.speak(message);
+
+      ButlerLogger.log('is speaking $res');
+      stopButler();
+    });
+  }
 }

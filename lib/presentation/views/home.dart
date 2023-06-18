@@ -34,9 +34,7 @@ class _HomeScreenState extends State<HomeScreen>
       appBar: AppBar(
         actions: [
           IconButton(
-            onPressed: () {
-              context.bulter.butlerSpeak('hello mom');
-            },
+            onPressed: () {},
             icon: const Icon(Icons.settings),
           ),
         ],

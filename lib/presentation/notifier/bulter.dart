@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:my_buttler/core/logger/logger.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
-import 'package:text_to_speech/text_to_speech.dart';
 
 class ButlerViewModel extends ChangeNotifier {
   ButlerViewModel() {
@@ -10,23 +10,26 @@ class ButlerViewModel extends ChangeNotifier {
     speechToText = SpeechToText();
 
     // initialize text to speech plugin
-    textToSpeech = TextToSpeech();
+    textToSpeech = FlutterTts();
+
+    configureTts();
   }
 
   late SpeechToText speechToText;
-  late TextToSpeech textToSpeech;
+  late FlutterTts textToSpeech;
 
   AnimationController? controller;
 
-  playButler() {
-    ButlerLogger.log('ai motion play');
+  void configureTts() async {
+    await textToSpeech.awaitSpeakCompletion(true);
+  }
+
+  void playButler() {
     controller?.duration = const Duration(milliseconds: 2500);
     controller?.repeat();
   }
 
-  stopButler() {
-    ButlerLogger.log('ai motion stop');
-
+  void stopButler() {
     controller?.stop();
     controller?.reset();
   }
@@ -46,7 +49,7 @@ class ButlerViewModel extends ChangeNotifier {
 
   void _onSpeechResult(SpeechRecognitionResult result) async {
     if (result.finalResult) {
-      if (result.confidence > .98) {
+      if (result.confidence > .65) {
         ButlerLogger.log({
           'confidence': result.confidence,
           'speech': result.recognizedWords,
@@ -56,7 +59,7 @@ class ButlerViewModel extends ChangeNotifier {
           'I didn\'t get what you said. Please kindly repeat yourself',
         );
 
-        // listen();
+        listen();
       }
     }
   }
@@ -64,17 +67,17 @@ class ButlerViewModel extends ChangeNotifier {
   void stopListen() async {
     ButlerLogger.log('listening stopped');
 
+    // stops speech to text
     speechToText.stop();
+    // stops text to speech
+    textToSpeech.stop();
   }
 
   Future<void> butlerSpeak(String message) async {
     playButler();
 
-    await Future.delayed(const Duration(milliseconds: 700), () async {
-      var res = await textToSpeech.speak(message);
+    await textToSpeech.speak(message);
 
-      ButlerLogger.log('is speaking $res');
-      stopButler();
-    });
+    stopButler();
   }
 }

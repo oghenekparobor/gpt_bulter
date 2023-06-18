@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider.value(value: BulterViewModel()),
+        ChangeNotifierProvider.value(value: ButlerViewModel()),
       ],
       child: MaterialApp(
         title: 'Buttler',

@@ -38,6 +38,8 @@ dependencies:
   lottie: ^2.4.0
   provider: ^6.0.5
   background_stt: ^1.0.6
+  logger: ^1.4.0
+  speech_to_text: ^6.1.1
 
 dev_dependencies:
   flutter_test:

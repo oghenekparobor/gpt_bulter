@@ -14,13 +14,20 @@ class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
   @override
   void initState() {
+    context.bulter.stopListen();
+
     context.bulter.controller = AnimationController(
       vsync: this,
     );
 
     super.initState();
+  }
 
-    context.bulter.listen();
+  @override
+  void dispose() {
+    context.bulter.stopListen();
+
+    super.dispose();
   }
 
   @override
@@ -29,7 +36,9 @@ class _HomeScreenState extends State<HomeScreen>
       appBar: AppBar(
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              context.bulter.butlerSpeak();
+            },
             icon: const Icon(Icons.settings),
           ),
         ],
@@ -40,6 +49,7 @@ class _HomeScreenState extends State<HomeScreen>
             child: Lottie.asset(
               ktalking,
               controller: context.bulter.controller,
+              onLoaded: (p0) => context.bulter.listen(),
             ),
           ),
         ],

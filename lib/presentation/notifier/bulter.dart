@@ -34,7 +34,12 @@ class ButlerViewModel extends ChangeNotifier {
     controller?.reset();
   }
 
-  void listen() async {
+  void listen({bool firstLaunch = false}) async {
+    if (firstLaunch) {
+      // welcome the user once app is justed opened
+      await butlerSpeak('Welcome! How can I be of assistance.');
+    }
+
     var status = await speechToText.initialize();
     if (status) {
       speechToText.listen(

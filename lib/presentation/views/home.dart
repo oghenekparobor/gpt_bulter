@@ -47,7 +47,7 @@ class _HomeScreenState extends State<HomeScreen>
               child: Lottie.asset(
                 ktalking,
                 controller: context.butler.controller,
-                onLoaded: (p0) => context.butler.listen(),
+                onLoaded: (_) => context.butler.listen(firstLaunch: true),
               ),
             ),
           ),

@@ -14,8 +14,6 @@ class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
   @override
   void initState() {
-    context.bulter.stopListen();
-
     context.bulter.controller = AnimationController(
       vsync: this,
     );
@@ -46,10 +44,13 @@ class _HomeScreenState extends State<HomeScreen>
       body: Stack(
         children: [
           Center(
-            child: Lottie.asset(
-              ktalking,
-              controller: context.bulter.controller,
-              onLoaded: (p0) => context.bulter.listen(),
+            child: GestureDetector(
+              onTap: () => context.bulter.listen(),
+              child: Lottie.asset(
+                ktalking,
+                controller: context.bulter.controller,
+                onLoaded: (p0) => context.bulter.listen(),
+              ),
             ),
           ),
         ],
